@@ -9,7 +9,7 @@ app.use("/posts", postsRoutes);
 app.use(cors());
 
 const CONNECTION_URL =
-  "mongodb+srv://nodercoder:TVJwgwEbfHbn3MgY@cluster0.kpebu.mongodb.net/?retryWrites=true&w=majority";
+  "mongodb+srv://nodercoder:TVJwgwEbfHbn3MgY@cluster0.kpebu.mongodb.net/social-media-app?retryWrites=true&w=majority";
 const PORT = process.env.PORT || 5000;
 
 mongoose
