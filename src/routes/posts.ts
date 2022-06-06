@@ -6,6 +6,7 @@ import {
   deletePost,
   likePost,
 } from "../controllers/posts";
+import PostMessage from "../models/PostMessage";
 
 const router = express.Router();
 

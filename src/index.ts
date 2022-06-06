@@ -1,20 +1,15 @@
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
 import postsRoutes from "./routes/posts";
+// import "./mongoConfig";
 
 const app = express();
+app.use(express.json());
 
 app.use("/posts", postsRoutes);
 app.use(cors());
 
-const CONNECTION_URL =
-  "mongodb+srv://nodercoder:TVJwgwEbfHbn3MgY@cluster0.kpebu.mongodb.net/social-media-app?retryWrites=true&w=majority";
 const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 
-mongoose
-  .connect(CONNECTION_URL)
-  .then(() =>
-    app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
-  )
-  .catch((err) => console.log(err.message));
+export default app;
