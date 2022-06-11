@@ -6,9 +6,11 @@ import {
   deletePost,
   likePost,
 } from "../controllers/posts";
-import PostMessage from "../models/PostMessage";
+import auth from "../middleware/auth";
 
 const router = express.Router();
+
+router.use(auth);
 
 router.get("/", getPosts);
 router.post("/", createPost);

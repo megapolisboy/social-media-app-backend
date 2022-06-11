@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-//@ts-ignore
 import { MongoMemoryServer } from "mongodb-memory-server";
 
 export async function initializeMongoServer() {
