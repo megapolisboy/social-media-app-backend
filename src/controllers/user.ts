@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
+import GoogleUser from "../models/GoogleUser";
 
 export const signin = async (req: Request, res: Response) => {
   const email: string = req.body.email;
@@ -66,5 +68,45 @@ export const signup = async (req: Request, res: Response) => {
     res.status(200).json({ result, token });
   } catch (err) {
     res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+export const signinWithGoogle = async (req: Request, res: Response) => {
+  const token = req.body.token as string;
+  const clientId =
+    "44100760713-cf7f064j9uvj7q07cq76ilo3qmhp8ukn.apps.googleusercontent.com";
+
+  const client = new OAuth2Client(clientId);
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: clientId,
+    });
+
+    const payload = ticket.getPayload();
+    const name = payload?.name;
+    const email = payload?.email;
+    const picture = payload?.picture;
+
+    const googleUser = { name, email, picture };
+
+    let existingUser = await GoogleUser.findOne({ email });
+    if (!existingUser) {
+      existingUser = await GoogleUser.create(googleUser);
+    }
+
+    const jwtToken = jwt.sign(
+      { email: existingUser.email, id: existingUser._id },
+      "test",
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    res.status(200).json({ result: existingUser, token: jwtToken });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
