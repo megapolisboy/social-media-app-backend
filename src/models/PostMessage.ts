@@ -22,6 +22,15 @@ const postSchema = new mongoose.Schema({
     type: Date,
     default: new Date(),
   },
+  comments: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
+    default: [],
+  },
 });
 
 const PostMessage = mongoose.model("PostMessage", postSchema);
