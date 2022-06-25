@@ -76,7 +76,14 @@ export const deletePost = async (req: Request, res: Response) => {
   if (!mongoose.Types.ObjectId.isValid(_id)) {
     return res.status(404).send("No posts with this id");
   }
+
   try {
+    const post = await PostMessage.findById(_id);
+    if (post.creator.toString() !== creator) {
+      return res
+        .status(403)
+        .json({ message: "Only creator can delete this post" });
+    }
     await PostMessage.findByIdAndRemove(_id);
 
     const dbuser = await User.findById(creator);

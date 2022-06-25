@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
-  password: { type: String, required: true },
+  password: String,
+  picture: String,
   posts: {
     type: [
       {
@@ -13,6 +14,8 @@ const userSchema = new mongoose.Schema({
     ],
     default: [],
   },
+  isGoogle: { type: Boolean, default: false },
+  isPassword: { type: Boolean, default: false },
 });
 
 const User = mongoose.model("User", userSchema);

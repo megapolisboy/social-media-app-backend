@@ -4,7 +4,6 @@ import User from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
-import GoogleUser from "../models/GoogleUser";
 
 export const signin = async (req: Request, res: Response) => {
   const email: string = req.body.email;
@@ -13,6 +12,9 @@ export const signin = async (req: Request, res: Response) => {
     const existingUser = await User.findOne({ email });
 
     if (!existingUser) {
+      return res.status(404).json({ message: "User doesn't exist." });
+    }
+    if (existingUser && !existingUser.isPassword) {
       return res.status(404).json({ message: "User doesn't exist." });
     }
     const isPasswordCorrect = await bcrypt.compare(
@@ -45,7 +47,7 @@ export const signup = async (req: Request, res: Response) => {
 
   try {
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    if (existingUser && existingUser.isPassword) {
       return res.status(400).json({ message: "User already exists" });
     }
 
@@ -55,11 +57,26 @@ export const signup = async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const result = await User.create({
-      email,
-      password: hashedPassword,
-      name: `${firstName} ${lastName}`,
-    });
+    let result;
+    if (!existingUser) {
+      result = await User.create({
+        email,
+        password: hashedPassword,
+        name: `${firstName} ${lastName}`,
+        isGoogle: false,
+        isPassword: true,
+      });
+    } else if (existingUser && existingUser.isGoogle) {
+      await User.updateOne(
+        { email: existingUser.email },
+        {
+          password: hashedPassword,
+          isPassword: true,
+        }
+      );
+      result = await User.findOne({ email: existingUser.email });
+      console.log(result);
+    }
 
     const token = jwt.sign({ email: result.email, id: result._id }, "test", {
       expiresIn: "1h",
@@ -89,11 +106,20 @@ export const signinWithGoogle = async (req: Request, res: Response) => {
     const email = payload?.email;
     const picture = payload?.picture;
 
-    const googleUser = { name, email, picture };
+    const googleUser = { name, email, picture, isGoogle: true };
 
-    let existingUser = await GoogleUser.findOne({ email });
+    let existingUser = await User.findOne({ email });
     if (!existingUser) {
-      existingUser = await GoogleUser.create(googleUser);
+      existingUser = await User.create({ ...googleUser, isPassword: false });
+    } else if (existingUser && !existingUser.isGoogle) {
+      await User.updateOne(
+        { email: existingUser.email },
+        {
+          isGoogle: true,
+          picture,
+        }
+      );
+      existingUser = await User.findOne({ email });
     }
 
     const jwtToken = jwt.sign(
