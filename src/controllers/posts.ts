@@ -17,6 +17,20 @@ export const getPosts = async (req: Request, res: Response) => {
   }
 };
 
+export const getCurrentUserPosts = async (req: Request, res: Response) => {
+  if (!req.body.userId)
+    return res.status(401).json({ message: "Unauthenticated" });
+  try {
+    const postMessages = await PostMessage.find({ creator: req.body.userId })
+      .populate("creator")
+      .populate("likes")
+      .populate("comments");
+    res.status(200).json(postMessages);
+  } catch (err: any) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
 export const createPost = async (req: Request, res: Response) => {
   if (!req.body.userId)
     return res.status(401).json({ message: "Unauthenticated" });

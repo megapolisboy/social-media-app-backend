@@ -9,6 +9,7 @@ import {
   updateComment,
   deleteComment,
   likeComment,
+  getCurrentUserPosts,
 } from "../controllers/posts";
 import auth from "../middleware/auth";
 
@@ -17,6 +18,7 @@ const router = express.Router();
 router.use(auth);
 
 router.get("/", getPosts);
+router.get("/currentUserPosts", getCurrentUserPosts);
 router.post("/", createPost);
 router.patch("/:id", updatePost);
 router.delete("/:id", deletePost);
