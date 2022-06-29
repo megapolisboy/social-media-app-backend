@@ -47,14 +47,21 @@ export const createPost = async (req: Request, res: Response) => {
     createdAt,
   };
 
-  const newPost = new PostMessage(post);
   try {
-    const createdPost = await newPost.save();
+    const createdPost = await PostMessage.create(post);
+    // const createdPost = await PostMessage.findOne({ _id: newPost._id })
+    //   .populate("creator")
+    //   .populate("likes")
+    //   .populate("comments");
+    createdPost.populate("creator");
+    createdPost.populate("likes");
+    createdPost.populate("comments");
+
     const dbuser = await User.findById(creator);
     dbuser.posts.push(createdPost._id);
     await dbuser.save();
 
-    res.status(201).json(newPost);
+    res.status(201).json(createdPost);
   } catch (err: any) {
     res.status(409).json({ message: err.message });
   }
@@ -72,7 +79,10 @@ export const updatePost = async (req: Request, res: Response) => {
     }
     const updatedPost = await PostMessage.findByIdAndUpdate(_id, post, {
       new: true,
-    });
+    })
+      .populate("creator")
+      .populate("likes")
+      .populate("comments");
 
     res.json(updatedPost);
   } catch (err: any) {
@@ -104,7 +114,6 @@ export const deletePost = async (req: Request, res: Response) => {
     dbuser.posts = dbuser.posts.filter(
       (post: any) => post._id.toString() !== _id
     );
-    console.log(dbuser);
     await dbuser.save();
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (err: any) {
@@ -138,7 +147,10 @@ export const likePost = async (req: Request, res: Response) => {
     }
     const updatedPost = await PostMessage.findByIdAndUpdate(_id, post, {
       new: true,
-    });
+    })
+      .populate("creator")
+      .populate("likes")
+      .populate("comments");
 
     res.status(200).json(updatedPost);
   } catch (err: any) {
