@@ -9,7 +9,9 @@ export const signin = async (req: Request, res: Response) => {
   const email: string = req.body.email;
   const password: string = req.body.password;
   try {
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email })
+      .populate("subscribers")
+      .populate("subscriptions");
 
     if (!existingUser) {
       return res.status(404).json({ message: "User doesn't exist." });
@@ -74,7 +76,9 @@ export const signup = async (req: Request, res: Response) => {
           isPassword: true,
         }
       );
-      result = await User.findOne({ email: existingUser.email });
+      result = await User.findOne({ email: existingUser.email })
+        .populate("subscribers")
+        .populate("subscriptions");
       console.log(result);
     }
 
@@ -110,7 +114,7 @@ export const signinWithGoogle = async (req: Request, res: Response) => {
 
     let existingUser = await User.findOne({ email });
     if (!existingUser) {
-      existingUser = await User.create({ ...googleUser, isPassword: false });
+      await User.create({ ...googleUser, isPassword: false });
     } else if (existingUser && !existingUser.isGoogle) {
       await User.updateOne(
         { email: existingUser.email },
@@ -119,8 +123,10 @@ export const signinWithGoogle = async (req: Request, res: Response) => {
           picture,
         }
       );
-      existingUser = await User.findOne({ email });
     }
+    existingUser = await User.findOne({ email })
+      .populate("subscribers")
+      .populate("subscriptions");
 
     const jwtToken = jwt.sign(
       { email: existingUser.email, id: existingUser._id },
@@ -158,6 +164,8 @@ export const subscribe = async (
 
     currentUser.save();
     followUser.save();
+
+    const newUser = await User.findById(_id);
     res.status(200).send(followUser);
   } catch (err) {
     res.status(500).json({ message: "Something went wrong" });
