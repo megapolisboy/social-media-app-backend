@@ -16,6 +16,24 @@ const userSchema = new mongoose.Schema({
   },
   isGoogle: { type: Boolean, default: false },
   isPassword: { type: Boolean, default: false },
+  subscriptions: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    default: [],
+  },
+  subscribers: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    default: [],
+  },
 });
 
 const User = mongoose.model("User", userSchema);

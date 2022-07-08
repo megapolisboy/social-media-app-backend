@@ -49,10 +49,6 @@ export const createPost = async (req: Request, res: Response) => {
 
   try {
     const createdPost = await PostMessage.create(post);
-    // const createdPost = await PostMessage.findOne({ _id: newPost._id })
-    //   .populate("creator")
-    //   .populate("likes")
-    //   .populate("comments");
     createdPost.populate("creator");
     createdPost.populate("likes");
     createdPost.populate("comments");

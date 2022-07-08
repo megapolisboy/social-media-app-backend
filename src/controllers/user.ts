@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
@@ -132,7 +132,44 @@ export const signinWithGoogle = async (req: Request, res: Response) => {
 
     res.status(200).json({ result: existingUser, token: jwtToken });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ message: "Something went wrong" });
   }
+};
+
+export const subscribe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.body.userId)
+    return res.status(401).json({ message: "Unauthenticated" });
+  const { id: _id } = req.params;
+  console.log("started");
+
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(404).send("No user with this id");
+  }
+  try {
+    const currentUser = await User.findById(req.body.userId);
+    const followUser = await User.findById(_id);
+
+    currentUser.subscriptions.push(_id);
+    followUser.subscribers.push(req.body.userId);
+
+    currentUser.save();
+    followUser.save();
+    res.status(200).send(followUser);
+  } catch (err) {
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export const unsubscribe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.body.userId)
+    return res.status(401).json({ message: "Unauthenticated" });
+  const { id: _id } = req.params;
 };
