@@ -162,13 +162,13 @@ export const subscribe = async (
     const currentUser = await User.findById(req.body.userId);
     const followUser = await User.findById(_id);
 
-    const id = currentUser.subscriptions.find(
+    const index = currentUser.subscriptions.findIndex(
       (subscription: string) => subscription === _id
     );
 
     let action;
 
-    if (!id) {
+    if (index === -1) {
       currentUser.subscriptions.push(_id);
       followUser.subscribers.push(req.body.userId);
       action = "subscribe";
@@ -177,7 +177,7 @@ export const subscribe = async (
         (subscription: string) => subscription !== _id
       );
       followUser.subscribers = followUser.subscribers.filter(
-        (subscription: string) => subscription !== req.body.userId
+        (subscriber: string) => subscriber !== req.body.userId
       );
       action = "unsubscribe";
     }
