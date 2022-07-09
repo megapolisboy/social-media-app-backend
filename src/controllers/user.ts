@@ -186,7 +186,7 @@ export const subscribe = async (
     followUser.save();
 
     const newUser = await User.findById(_id);
-    res.status(200).send({ action, user: followUser });
+    res.status(200).send({ action, user: newUser });
   } catch (err) {
     res.status(500).json({ message: "Something went wrong" });
   }
