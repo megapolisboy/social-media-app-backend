@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -163,7 +163,7 @@ export const subscribe = async (
     const followUser = await User.findById(_id);
 
     const index = currentUser.subscriptions.findIndex(
-      (subscription: string) => subscription === _id
+      (subscription: ObjectId) => subscription.toString() === _id
     );
 
     let action;
@@ -174,10 +174,10 @@ export const subscribe = async (
       action = "subscribe";
     } else {
       currentUser.subscriptions = currentUser.subscriptions.filter(
-        (subscription: string) => subscription !== _id
+        (subscription: ObjectId) => subscription.toString() !== _id
       );
       followUser.subscribers = followUser.subscribers.filter(
-        (subscriber: string) => subscriber !== req.body.userId
+        (subscriber: ObjectId) => subscriber.toString() !== req.body.userId
       );
       action = "unsubscribe";
     }
