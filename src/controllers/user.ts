@@ -11,7 +11,8 @@ export const signin = async (req: Request, res: Response) => {
   try {
     const existingUser = await User.findOne({ email })
       .populate("subscribers")
-      .populate("subscriptions");
+      .populate("subscriptions")
+      .populate("posts");
 
     if (!existingUser) {
       return res.status(404).json({ message: "User doesn't exist." });
@@ -78,7 +79,8 @@ export const signup = async (req: Request, res: Response) => {
       );
       result = await User.findOne({ email: existingUser.email })
         .populate("subscribers")
-        .populate("subscriptions");
+        .populate("subscriptions")
+        .populate("posts");
       console.log(result);
     }
 
@@ -126,7 +128,8 @@ export const signinWithGoogle = async (req: Request, res: Response) => {
     }
     existingUser = await User.findOne({ email })
       .populate("subscribers")
-      .populate("subscriptions");
+      .populate("subscriptions")
+      .populate("posts");
 
     const jwtToken = jwt.sign(
       { email: existingUser.email, id: existingUser._id },
