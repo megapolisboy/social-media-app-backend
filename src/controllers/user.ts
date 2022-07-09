@@ -162,8 +162,21 @@ export const subscribe = async (
     const currentUser = await User.findById(req.body.userId);
     const followUser = await User.findById(_id);
 
-    currentUser.subscriptions.push(_id);
-    followUser.subscribers.push(req.body.userId);
+    const id = currentUser.subscriptions.find(
+      (subscription: string) => subscription === _id
+    );
+
+    if (!id) {
+      currentUser.subscriptions.push(_id);
+      followUser.subscribers.push(req.body.userId);
+    } else {
+      currentUser.subscriptions = currentUser.subscriptions.filter(
+        (subscription: string) => subscription !== _id
+      );
+      followUser.subscribers = followUser.subscribers.filter(
+        (subscription: string) => subscription !== req.body.userId
+      );
+    }
 
     currentUser.save();
     followUser.save();
@@ -173,16 +186,6 @@ export const subscribe = async (
   } catch (err) {
     res.status(500).json({ message: "Something went wrong" });
   }
-};
-
-export const unsubscribe = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  if (!req.body.userId)
-    return res.status(401).json({ message: "Unauthenticated" });
-  const { id: _id } = req.params;
 };
 
 export const getAllUsers = async (
