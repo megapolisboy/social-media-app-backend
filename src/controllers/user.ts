@@ -166,9 +166,12 @@ export const subscribe = async (
       (subscription: string) => subscription === _id
     );
 
+    let action;
+
     if (!id) {
       currentUser.subscriptions.push(_id);
       followUser.subscribers.push(req.body.userId);
+      action = "subscribe";
     } else {
       currentUser.subscriptions = currentUser.subscriptions.filter(
         (subscription: string) => subscription !== _id
@@ -176,13 +179,14 @@ export const subscribe = async (
       followUser.subscribers = followUser.subscribers.filter(
         (subscription: string) => subscription !== req.body.userId
       );
+      action = "unsubscribe";
     }
 
     currentUser.save();
     followUser.save();
 
     const newUser = await User.findById(_id);
-    res.status(200).send(followUser);
+    res.status(200).send({ action, user: followUser });
   } catch (err) {
     res.status(500).json({ message: "Something went wrong" });
   }
