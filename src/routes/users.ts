@@ -15,6 +15,6 @@ router.post("/signin", signin);
 router.post("/signin/google", signinWithGoogle);
 router.post("/signup", signup);
 router.patch("/subscribe/:id", auth, subscribe);
-router.get("/", auth, getAllUsers);
+router.get("/:search?", auth, getAllUsers);
 
 export default router;

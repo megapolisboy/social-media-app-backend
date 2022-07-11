@@ -197,10 +197,13 @@ export const getAllUsers = async (
   res: Response,
   next: NextFunction
 ) => {
+  const { search } = req.params;
   if (!req.body.userId)
     return res.status(401).json({ message: "Unauthenticated" });
   try {
-    const users = await User.find({})
+    const exp = new RegExp(search, "i");
+    const users = await User.find({ name: exp })
+      .limit(20)
       .populate("subscribers")
       .populate("subscriptions")
       .populate("posts");
