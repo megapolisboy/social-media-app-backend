@@ -231,6 +231,7 @@ export const getUser = async (
       .populate("subscribers")
       .populate("subscriptions")
       .populate("posts");
+    console.log(user);
     res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: "Something went wrong" });
