@@ -200,6 +200,7 @@ export const getAllUsers = async (
   const { search } = req.params;
   if (!req.body.userId)
     return res.status(401).json({ message: "Unauthenticated" });
+
   try {
     const exp = new RegExp(search, "i");
     const users = await User.find({ name: exp })
@@ -208,6 +209,29 @@ export const getAllUsers = async (
       .populate("subscriptions")
       .populate("posts");
     res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id: _id } = req.params;
+  if (!req.body.userId)
+    return res.status(401).json({ message: "Unauthenticated" });
+
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(404).send("No user with this id");
+  }
+  try {
+    const user = await User.findById(_id)
+      .populate("subscribers")
+      .populate("subscriptions")
+      .populate("posts");
+    res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: "Something went wrong" });
   }
