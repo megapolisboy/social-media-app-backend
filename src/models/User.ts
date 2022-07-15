@@ -34,6 +34,16 @@ const userSchema = new mongoose.Schema({
     ],
     default: [],
   },
+
+  stories: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Story",
+      },
+    ],
+    default: [],
+  },
 });
 
 const User = mongoose.model("User", userSchema);

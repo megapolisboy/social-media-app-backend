@@ -4,6 +4,7 @@ import User from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
+import Story from "../models/Story";
 
 export const signin = async (req: Request, res: Response) => {
   const email: string = req.body.email;
@@ -12,7 +13,8 @@ export const signin = async (req: Request, res: Response) => {
     const existingUser = await User.findOne({ email })
       .populate("subscribers")
       .populate("subscriptions")
-      .populate("posts");
+      .populate("posts")
+      .populate("stories");
 
     if (!existingUser) {
       return res.status(404).json({ message: "User doesn't exist." });
@@ -80,7 +82,8 @@ export const signup = async (req: Request, res: Response) => {
       result = await User.findOne({ email: existingUser.email })
         .populate("subscribers")
         .populate("subscriptions")
-        .populate("posts");
+        .populate("posts")
+        .populate("stories");
       console.log(result);
     }
 
@@ -129,7 +132,8 @@ export const signinWithGoogle = async (req: Request, res: Response) => {
     existingUser = await User.findOne({ email })
       .populate("subscribers")
       .populate("subscriptions")
-      .populate("posts");
+      .populate("posts")
+      .populate("stories");
 
     const jwtToken = jwt.sign(
       { email: existingUser.email, id: existingUser._id },
@@ -207,7 +211,13 @@ export const getAllUsers = async (
       .limit(20)
       .populate("subscribers")
       .populate("subscriptions")
-      .populate("posts");
+      .populate("posts")
+      .populate("stories");
+    users.map((user) =>
+      user.stories.filter(
+        (story: any) => new Date().getTime() - story.createdAt.getTime() < 86400
+      )
+    );
     res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ message: "Something went wrong" });
@@ -236,4 +246,23 @@ export const getUser = async (
   } catch (err) {
     res.status(500).json({ message: "Something went wrong" });
   }
+};
+
+export const addStory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.body.userId)
+    return res.status(401).json({ message: "Unauthenticated" });
+  const story = req.body.story as string;
+  const user = await User.findById(req.body.userId);
+  const savedStory = await Story.create({
+    creator: req.body.userId,
+    createdAt: new Date(),
+    post: story,
+  });
+  user.stories.push(savedStory._id);
+  await user.save();
+  res.status(201).json(savedStory);
 };

@@ -1,6 +1,7 @@
 import express from "express";
 import {} from "../controllers/posts";
 import {
+  addStory,
   getAllUsers,
   getUser,
   signin,
@@ -18,5 +19,6 @@ router.post("/signup", signup);
 router.patch("/subscribe/:id", auth, subscribe);
 router.get("/:search?", auth, getAllUsers);
 router.get("/id/:id", auth, getUser);
+router.post("/story", auth, addStory);
 
 export default router;
