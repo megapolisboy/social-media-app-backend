@@ -6,6 +6,19 @@ import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import Story from "../models/Story";
 
+export const getCurrentUser = async (req: Request, res: Response) => {
+  if (!req.body.userId)
+    return res.status(401).json({ message: "Unauthenticated" });
+
+  const user = await User.findById(req.body.userId)
+    .populate("subscribers")
+    .populate("subscriptions")
+    .populate("posts")
+    .populate("stories");
+
+  res.status(200).json({ result: user });
+};
+
 export const signin = async (req: Request, res: Response) => {
   const email: string = req.body.email;
   const password: string = req.body.password;

@@ -3,6 +3,7 @@ import {} from "../controllers/posts";
 import {
   addStory,
   getAllUsers,
+  getCurrentUser,
   getUser,
   signin,
   signinWithGoogle,
@@ -20,5 +21,6 @@ router.patch("/subscribe/:id", auth, subscribe);
 router.get("/:search?", auth, getAllUsers);
 router.get("/id/:id", auth, getUser);
 router.post("/story", auth, addStory);
+router.get("/current", auth, getCurrentUser);
 
 export default router;
