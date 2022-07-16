@@ -16,7 +16,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
     .populate("posts")
     .populate("stories");
 
-  res.status(200).json({ result: user });
+  res.status(200).json(user);
 };
 
 export const signin = async (req: Request, res: Response) => {
