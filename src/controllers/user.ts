@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import Story from "../models/Story";
+import { filterStoriesOfCurrentUser } from "../utils/storiesHelper";
 
 export const getCurrentUser = async (req: Request, res: Response) => {
   if (!req.body.userId)
@@ -15,6 +16,9 @@ export const getCurrentUser = async (req: Request, res: Response) => {
     .populate("subscriptions")
     .populate("posts")
     .populate("stories");
+
+  user.stories = filterStoriesOfCurrentUser(user.stories);
+  await user.save();
 
   res.status(200).json(user);
 };
@@ -224,13 +228,7 @@ export const getAllUsers = async (
       .limit(20)
       .populate("subscribers")
       .populate("subscriptions")
-      .populate("posts")
-      .populate("stories");
-    users.map((user) =>
-      user.stories.filter(
-        (story: any) => new Date().getTime() - story.createdAt.getTime() < 86400
-      )
-    );
+      .populate("posts");
     res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ message: "Something went wrong" });

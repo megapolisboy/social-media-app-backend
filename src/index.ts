@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import postsRoutes from "./routes/posts";
 import userRoutes from "./routes/users";
+import storiesRouter from "./routes/stories";
 import "./mongoConfig";
-import bodyParser from "body-parser";
 
 const app = express();
 app.use(express.json({ limit: "30mb" }));
@@ -13,6 +13,7 @@ app.use(cors());
 
 app.use("/posts", postsRoutes);
 app.use("/user", userRoutes);
+app.use("/stories", storiesRouter);
 
 app.use("/", (req, res) => res.send("App is running"));
 
