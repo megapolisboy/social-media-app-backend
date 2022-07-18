@@ -2,7 +2,8 @@ export const filterStories = (users: any) => {
   const filteredUsers = users.map((user: any) => ({
     ...user,
     stories: user.stories.filter(
-      (story: any) => new Date().getTime() - story.createdAt.getTime() < 86400
+      (story: any) =>
+        new Date().getTime() - story.createdAt.getTime() < 86400000
     ),
   }));
 
@@ -15,6 +16,6 @@ export const filterStories = (users: any) => {
 
 export const filterStoriesOfCurrentUser = (stories: any) => {
   return stories.filter(
-    (story: any) => new Date().getTime() - story.createdAt.getTime() < 86400
+    (story: any) => new Date().getTime() - story.createdAt.getTime() < 86400000
   );
 };
