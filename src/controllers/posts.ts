@@ -178,6 +178,7 @@ export const addComment = async (req: Request, res: Response) => {
     const post = await PostMessage.findById(_id);
     post.comments.push(createdComment._id);
     await PostMessage.findByIdAndUpdate(_id, post, { new: true });
+    createdComment.populate("creator");
 
     res.status(200).json(createdComment);
   } catch (err: any) {
