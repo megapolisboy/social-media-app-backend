@@ -165,12 +165,12 @@ export const addComment = async (req: Request, res: Response) => {
     return res.status(404).send("No posts with this id");
   }
 
-  const { message, createdAt } = req.body;
+  const { message } = req.body;
 
   try {
     const createdComment = await Comment.create({
       message,
-      createdAt,
+      createdAt: new Date(),
       creator: req.body.userId,
       post: _id,
     });
