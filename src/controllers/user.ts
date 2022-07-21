@@ -101,7 +101,6 @@ export const signup = async (req: Request, res: Response) => {
         .populate("subscriptions")
         .populate("posts")
         .populate("stories");
-      console.log(result);
     }
 
     const token = jwt.sign({ email: result.email, id: result._id }, "test", {
@@ -174,7 +173,6 @@ export const subscribe = async (
   if (!req.body.userId)
     return res.status(401).json({ message: "Unauthenticated" });
   const { id: _id } = req.params;
-  console.log("started");
 
   if (!mongoose.Types.ObjectId.isValid(_id)) {
     return res.status(404).send("No user with this id");
@@ -252,7 +250,6 @@ export const getUser = async (
       .populate("subscribers")
       .populate("subscriptions")
       .populate("posts");
-    console.log(user);
     res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: "Something went wrong" });

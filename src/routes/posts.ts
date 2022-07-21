@@ -10,8 +10,11 @@ import {
   deleteComment,
   likeComment,
   getCurrentUserPosts,
+  addImageToPost,
 } from "../controllers/posts";
 import auth from "../middleware/auth";
+import multer from "multer";
+const upload = multer({ dest: "images/" });
 
 const router = express.Router();
 
@@ -20,6 +23,7 @@ router.use(auth);
 router.get("/", getPosts);
 router.get("/currentUserPosts", getCurrentUserPosts);
 router.post("/", createPost);
+router.put("/:id/image", upload.single("selectedFile"), addImageToPost);
 router.patch("/:id", updatePost);
 router.delete("/:id", deletePost);
 router.patch("/:id/likePost", likePost);
