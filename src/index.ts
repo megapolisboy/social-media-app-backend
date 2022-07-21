@@ -6,10 +6,10 @@ import storiesRouter from "./routes/stories";
 import "./mongoConfig";
 
 const app = express();
+app.use(cors());
 app.use(express.json({ limit: "30mb" }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(express.json());
-app.use(cors());
 
 app.use("/posts", postsRoutes);
 app.use("/user", userRoutes);
