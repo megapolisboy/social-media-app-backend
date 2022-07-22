@@ -14,7 +14,7 @@ import {
 } from "../controllers/posts";
 import auth from "../middleware/auth";
 import multer from "multer";
-const upload = multer({ dest: "images/" });
+const upload = multer({ dest: "uploads/" });
 
 const router = express.Router();
 

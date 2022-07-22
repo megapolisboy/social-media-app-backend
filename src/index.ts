@@ -5,6 +5,7 @@ import userRoutes from "./routes/users";
 import storiesRouter from "./routes/stories";
 import "./mongoConfig";
 import path from "path";
+require("dotenv").config();
 
 const app = express();
 app.use(cors());

@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import Story from "../models/Story";
 import { filterStoriesOfCurrentUser } from "../utils/storiesHelper";
+import cloudinary from "../utils/cloudinary";
 
 export const getCurrentUser = async (req: Request, res: Response) => {
   if (!req.body.userId)
@@ -261,14 +262,16 @@ export const addStory = async (
   res: Response,
   next: NextFunction
 ) => {
+  console.log(req.body);
   if (!req.body.userId)
     return res.status(401).json({ message: "Unauthenticated" });
-  const story = req.body.story as string;
+  const uploadResponse = await cloudinary.uploader.upload(req.file?.path || "");
   const user = await User.findById(req.body.userId);
+
   const savedStory = await Story.create({
     creator: req.body.userId,
     createdAt: new Date(),
-    post: story,
+    post: uploadResponse.url,
   });
   user.stories.push(savedStory._id);
   await user.save();

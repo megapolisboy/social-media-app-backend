@@ -3,6 +3,7 @@ import mongoose, { ObjectId } from "mongoose";
 import Comment from "../models/Comment";
 import PostMessage from "../models/PostMessage";
 import User from "../models/User";
+import cloudinary from "../utils/cloudinary";
 export const getPosts = async (req: Request, res: Response) => {
   if (!req.body.userId)
     return res.status(401).json({ message: "Unauthenticated" });
@@ -64,9 +65,15 @@ export const createPost = async (req: Request, res: Response) => {
 
 export const addImageToPost = async (req: Request, res: Response) => {
   const { id: _id } = req.params;
-  const post = await PostMessage.findByIdAndUpdate(_id, {
-    selectedFile: req.file?.path,
-  })
+  const uploadResponse = await cloudinary.uploader.upload(req.file?.path || "");
+
+  const post = await PostMessage.findByIdAndUpdate(
+    _id,
+    {
+      selectedFile: uploadResponse.url,
+    },
+    { new: true }
+  )
     .populate("creator")
     .populate("likes")
     .populate("comments");
