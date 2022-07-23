@@ -7,6 +7,7 @@ import { OAuth2Client } from "google-auth-library";
 import Story from "../models/Story";
 import { filterStoriesOfCurrentUser } from "../utils/storiesHelper";
 import cloudinary from "../utils/cloudinary";
+import PostMessage from "../models/PostMessage";
 
 export const getCurrentUser = async (req: Request, res: Response) => {
   if (!req.body.userId)
@@ -182,6 +183,13 @@ export const subscribe = async (
     const currentUser = await User.findById(req.body.userId);
     const followUser = await User.findById(_id);
 
+    // TODO:
+    // if (currentUser._id === followUser._id) {
+    //   return res
+    //     .status(401)
+    //     .json({ message: "You are not allowed to subscribe to yourself" });
+    // }
+
     const index = currentUser.subscriptions.findIndex(
       (subscription: ObjectId) => subscription.toString() === _id
     );
@@ -262,7 +270,6 @@ export const addStory = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(req.body);
   if (!req.body.userId)
     return res.status(401).json({ message: "Unauthenticated" });
   const uploadResponse = await cloudinary.uploader.upload(req.file?.path || "");
@@ -276,4 +283,27 @@ export const addStory = async (
   user.stories.push(savedStory._id);
   await user.save();
   res.status(201).json(savedStory);
+};
+
+export const addSavedPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.body.userId)
+    return res.status(401).json({ message: "Unauthenticated" });
+  const { id } = req.params;
+  const post = await PostMessage.findById(id);
+  if (!post) {
+    res.status(404).json({ message: "Post not found" });
+  }
+
+  try {
+    const currentUser = await User.findById(req.body.userId);
+    currentUser.savedPosts.push(id);
+    currentUser.save();
+    res.status(201).json(post);
+  } catch (err) {
+    res.status(500).json({ message: "Something went wrong" });
+  }
 };

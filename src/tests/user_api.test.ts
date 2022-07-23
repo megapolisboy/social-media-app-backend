@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import supertest from "supertest";
 import app from "../index";
-import PostMessage from "../models/PostMessage";
 import { initializeMongoServer } from "../mongoConfigTesting";
 
 const api = supertest(app);

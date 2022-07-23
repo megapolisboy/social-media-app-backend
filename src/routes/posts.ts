@@ -11,6 +11,7 @@ import {
   likeComment,
   getCurrentUserPosts,
   addImageToPost,
+  getPostComments,
 } from "../controllers/posts";
 import auth from "../middleware/auth";
 import multer from "multer";
@@ -31,5 +32,6 @@ router.post("/:id/comment", addComment);
 router.patch("/comment/:id", updateComment);
 router.delete("/comment/:id", deleteComment);
 router.patch("/comment/:id/likeComment", likeComment);
+router.get("/:id/comments", getPostComments);
 
 export default router;

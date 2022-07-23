@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import mongoose, { ObjectId } from "mongoose";
 import Comment from "../models/Comment";
 import PostMessage from "../models/PostMessage";
@@ -281,4 +281,21 @@ export const likeComment = async (req: Request, res: Response) => {
   });
 
   res.status(200).json(updatedComment);
+};
+
+export const getPostComments = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.body.userId)
+    return res.status(401).json({ message: "Unauthenticated" });
+
+  try {
+    const { id } = req.params;
+    const comments = await Comment.find({ post: id }).populate("creator");
+    res.status(200).json(comments);
+  } catch (err) {
+    res.status(500).json({ message: "Something went wrong" });
+  }
 };

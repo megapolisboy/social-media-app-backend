@@ -44,6 +44,16 @@ const userSchema = new mongoose.Schema({
     ],
     default: [],
   },
+
+  savedPosts: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "PostMessage",
+      },
+    ],
+    default: [],
+  },
 });
 
 const User = mongoose.model("User", userSchema);

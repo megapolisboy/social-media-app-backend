@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import {} from "../controllers/posts";
 import {
+  addSavedPost,
   addStory,
   getAllUsers,
   getCurrentUser,
@@ -24,5 +25,6 @@ router.get("/current", auth, getCurrentUser);
 router.get("/:search?", auth, getAllUsers);
 router.get("/id/:id", auth, getUser);
 router.post("/story", upload.single("story"), auth, addStory);
+router.put("/savedPost/:id", auth, addSavedPost);
 
 export default router;
